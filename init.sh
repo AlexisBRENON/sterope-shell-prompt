@@ -3,7 +3,7 @@
 . "${PROMPT_ALEXIS_PATH}/functions.sh"
 
 prompt_alexis_posix_setup() {
-  export _prompt_alexis_git_symbols="   :: : : :  : : : : : :🔥 : : : : : :✨ :🔥 : :⭐ :🔧 : : : : : : : : : :⏩ : : : : : : : : : "
+  export _prompt_alexis_git_symbols="   :: : : :  : : : : : :🔥 : : : : : :✨ :🔥 : :⭐ :🔧 : : : : : : : : : :⏩ : : : : : : : : : "
   export _prompt_alexis_git_symbols_map="
     is_a_git_repo:1
     separator:2
@@ -29,7 +29,7 @@ prompt_alexis_posix_setup() {
   _old_optind=${OPTIND}
   while getopts s: OPTION; do
     case ${OPTION} in
-      -s)
+      s)
         _prompt_alexis_git_symbols="${OPTARG}"
     esac
   done
@@ -49,7 +49,7 @@ The git line is based on the god-bless-git plugin (github.com/AlexisBRENON/god-b
 List of the prompt options:
   ${BWhite:-}-s${ColorReset:-} <symbols>
       A colon separated string representing symbols to use in the git line.
-      Default: 
+      Default:
         \"   :: : : :  : : : : : :🔥 : : : : : :✨ :🔥 : :⭐ :🔧 : : : : : : : : : :⏩ : : : : : : : : : \"
       Symbols meanings are:
         1: Current directory is a git repository
