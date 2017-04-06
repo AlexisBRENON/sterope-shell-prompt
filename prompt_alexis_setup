@@ -1,4 +1,4 @@
-#! /usr/bin/env zsh
+#! /bin/sh
 #
 # TODO
 #
@@ -6,35 +6,49 @@
 #   Alexis BRENON
 #
 
-PROMPT_ALEXIS_PATH="$(dirname "$(command -V $0 | sed -Ee 's#.* from (/.*/'$0').*#\1#')")"
-. "${PROMPT_ALEXIS_PATH}/init.sh"
-
-function prompt_alexis_setup {
-  prompt_opts=(cr percent subst)
-
-  prompt_alexis_posix_setup $@
-
-  # Load required functions.
-  autoload -Uz add-zsh-hook
-  add-zsh-hook precmd prompt_alexis_precmd
-
-  export _prompt_alexis_async_refresh_command="zle && zle reset-prompt && print ''"
-  # Define prompts.
-  PROMPT='${$(prompt_alexis_build_prompt)}${editor_info[keymap]}'
-  RPROMPT=''
+get_absolute_dirname() {
+  SOURCE="$1"
+  while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [ "$SOURCE" != "/*" ] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+  done
+  ( cd -P "$( dirname "$SOURCE" )" && pwd )
+  unset DIR
+  unset SOURCE
 }
 
-function prompt_alexis_preview {
-  local +h PROMPT=''
-  local +h RPROMPT=''
-  local +h SPROMPT=''
-
-  editor-info 2>/dev/null
-  prompt_preview_theme 'alexis'
+get_current_shell() {
+  # We cannot rely on the SHELL value which is not updated when launching a different shell
+  if [ -n "${BASH}" ]; then basename "${BASH}"
+  elif [ -n "${ZSH_NAME}" ]; then echo "${ZSH_NAME}"
+  fi
 }
 
-function prompt_alexis_help {
-  prompt_alexis_posix_help
-}
+PROMPT_ALEXIS_PATH=${PROMPT_ALEXIS_PATH:-}
+for ARG in "${PROMPT_ALEXIS_PATH}" "$0" "$1" "$_" "$(command -V "$0" | sed 's#.*from /#/#')"; do
+  TEST_PATH="$(get_absolute_dirname "$ARG")"
+  if [ -e "${TEST_PATH}/prompt_alexis_setup" ]; then
+    PROMPT_ALEXIS_PATH="${TEST_PATH}"
+    break;
+  fi
+done
+unset TEST_PATH
 
+prompt_alexis_setup() {
+  if [ -e "${PROMPT_ALEXIS_PATH}/prompt_alexis_setup" ]; then
+    . "${PROMPT_ALEXIS_PATH}/setup/posix.sh"
+    f_prompt_alexis_posix_setup "$@"
+
+    l_prompt_alexis_current_shell="$(get_current_shell)"
+    if [ -e "${PROMPT_ALEXIS_PATH}/setup/${l_prompt_alexis_current_shell}.sh" ]; then
+      . "${PROMPT_ALEXIS_PATH}/setup/${l_prompt_alexis_current_shell}.sh"
+      "f_prompt_alexis_${l_prompt_alexis_current_shell}_setup"
+    fi
+    unset l_prompt_alexis_current_shell
+  fi
+}
 prompt_alexis_setup "$@"
+
+unset get_current_shell
+unset get_absolute_dirname
