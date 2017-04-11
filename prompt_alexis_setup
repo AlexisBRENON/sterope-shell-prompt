@@ -9,11 +9,11 @@
 get_absolute_dirname() {
   SOURCE="$1"
   while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    DIR="$( cd -P "$( dirname -- "$SOURCE" )" && pwd )"
     SOURCE="$(readlink "$SOURCE")"
     [ "$SOURCE" != "/*" ] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
   done
-  ( cd -P "$( dirname "$SOURCE" )" && pwd )
+  ( cd -P "$( dirname -- "$SOURCE" )" && pwd )
   unset DIR
   unset SOURCE
 }
@@ -26,7 +26,7 @@ get_current_shell() {
 }
 
 PROMPT_ALEXIS_PATH=${PROMPT_ALEXIS_PATH:-}
-for ARG in "${PROMPT_ALEXIS_PATH}" "$0" "$1" "$_" "$(command -V "$0" | sed 's#.*from /#/#')"; do
+for ARG in "${PROMPT_ALEXIS_PATH}" "$0" "$1" "$_" "$(command -V "$0" 2>/dev/null | sed 's#.*from /#/#')"; do
   TEST_PATH="$(get_absolute_dirname "$ARG")"
   if [ -e "${TEST_PATH}/prompt_alexis_setup" ]; then
     PROMPT_ALEXIS_PATH="${TEST_PATH}"
