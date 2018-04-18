@@ -3,7 +3,28 @@
 f_prompt_alexis_posix_setup() {
   # Load utilities functions
   . "${PROMPT_ALEXIS_PATH}/functions/posix.sh"
-  v_prompt_alexis_git_symbols="    :: : : :  : : : : : :🔥 : : : : : :✨ :🔥 : :⭐ :🔧 : : : : : : : : : :⏩ : : : : : : : : : "
+#  v_prompt_alexis_git_symbols="    :▓▒░: : : :  : : : : : : : : : : : :✨ :🔥 : : : : : : : : : : : : :⏩ : : : : : : : : : "
+
+  if [[ -e "$HOME/.local/share/icons-in-terminal/icons_bash.sh" ]]; then
+    DEBUG "Loading icons in terminal"
+    source "$HOME/.local/share/icons-in-terminal/icons_bash.sh"
+    v_tmp=" $oct_octoface    " # is_a_git_repo
+    v_tmp="$v_tmp:$powerline_left_hard_divider " # separator
+    v_tmp="$v_tmp: : : "
+    v_tmp="$v_tmp:$fa_asterisk :$fa_eye_slash "
+    v_tmp="$v_tmp: : : "
+    v_tmp="$v_tmp:$fa_pencil :$fa_pencil :$fa_plus :$fa_minus "
+    v_tmp="$v_tmp: "
+    v_tmp="$v_tmp:$fa_pencil :$fa_pencil :✨ :🔥 : "
+    v_tmp="$v_tmp:$oct_git_commit :$fa_wrench : : : "
+    v_tmp="$v_tmp:$fa_chain_broken :$md_cloud_off : : : "
+    v_tmp="$v_tmp:$oct_repo_forked :$md_fast_forward :$oct_cloud_upload : : "
+    v_tmp="$v_tmp:$oct_git_pull_request :$oct_git_merge : : : "
+    v_tmp="$v_tmp:$fa_tag "
+    v_prompt_alexis_git_symbols="${v_tmp}"
+    unset v_tmp
+    DEBUG "git_symbols: ${v_prompt_alexis_git_symbols}"
+  fi
   v_prompt_alexis_git_symbols_map="
     is_a_git_repo:1
     separator:2
