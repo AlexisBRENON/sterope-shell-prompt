@@ -60,7 +60,11 @@ lf_prompt_alexis_get_symbol_for() {
 f_prompt_alexis_build_git_line() {
   if [ "${gbg_is_a_git_repo:-}" = "true" ]
   then
+    # git repo infos
     l_prompt_alexis_git_line="${Black:-}${On_White:-}"
+    l_prompt_alexis_git_line="${l_prompt_alexis_git_line}$(\
+      basename "${gbg_repo_top_level}"\
+    )"
     l_prompt_alexis_git_line="${l_prompt_alexis_git_line}$(\
       lf_prompt_alexis_get_symbol_for is_a_git_repo\
     )"
@@ -155,7 +159,7 @@ f_prompt_alexis_build_git_line() {
       elif [ "${gbg_upstream_commits_ahead_num:-0}" -gt 0 ]; then
         upstream_diff="$(lf_prompt_alexis_get_symbol_for should_push)"
       elif [ "${gbg_upstream_commits_ahead_num:-0}" -eq 0 ] && [ "${gbg_upstream_commits_behind_num:-0}" -eq 0 ]; then
-        upstream_diff="  "
+        upstream_diff=" "
       fi
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${White}"
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${upstream_diff}"
@@ -170,7 +174,7 @@ f_prompt_alexis_build_git_line() {
 
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line} (${gbg_head_branch} $(\
         lf_prompt_alexis_get_symbol_for "${gbg_upstream_merge_type:-merge}_tracking"\
-      ) ${gbg_upstream_name:-""//\/$gbg_head_branch/}) "
+        ) $(echo ${gbg_upstream_name:-""} | sed "s#$gbg_head_branch#...#")) "
     fi
 
     l_prompt_alexis_git_line="${l_prompt_alexis_git_line}$(\
