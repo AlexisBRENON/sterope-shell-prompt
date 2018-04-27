@@ -125,26 +125,20 @@ f_prompt_alexis_build_git_line() {
 
     l_prompt_alexis_git_line="${l_prompt_alexis_git_line} ${Yellow:-}${On_Red:-}$(
       lf_prompt_alexis_get_symbol_for separator
-      )${Black} "
+      )${White} "
 
     # Remote
     if [ "${gbg_head_is_detached:-}" = "true" ] # Detached state
     then
-      l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${White}"
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line}$(lf_prompt_alexis_get_symbol_for detached)"
-      l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${Black}"
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line} ${gbg_head_hash:-:0:7}"
     elif [ "${gbg_upstream_has_upstream:-}" = "false" ] # No upstream set
     then
-      l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${Black}"
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line}-- "
-      l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${White}"
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line}$(lf_prompt_alexis_get_symbol_for not_tracked)"
-      l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${Black}"
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line} --"
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line} (${gbg_head_branch:-"???"}) "
     else # Standard branch
-      l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${Black}"
       if [ "${gbg_upstream_commits_behind_num:-0}" -gt 0 ]; then
         l_prompt_alexis_git_line="${l_prompt_alexis_git_line} -${gbg_upstream_commits_behind_num} "
       else
@@ -161,11 +155,9 @@ f_prompt_alexis_build_git_line() {
       elif [ "${gbg_upstream_commits_ahead_num:-0}" -eq 0 ] && [ "${gbg_upstream_commits_behind_num:-0}" -eq 0 ]; then
         upstream_diff=" "
       fi
-      l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${White}"
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${upstream_diff}"
       unset upstream_diff
 
-      l_prompt_alexis_git_line="${l_prompt_alexis_git_line}${Black}"
       if [ "${gbg_upstream_commits_ahead_num:-0}" -gt 0 ]; then
         l_prompt_alexis_git_line="${l_prompt_alexis_git_line} +${gbg_upstream_commits_ahead_num} "
       else
