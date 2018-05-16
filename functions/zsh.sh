@@ -71,9 +71,11 @@ f_prompt_alexis_pwd() {
 unset f_prompt_alexis_last_command_status
 f_prompt_alexis_last_command_status() {
   if [ -n "${ColorFontCode:-}" ]; then
-    _yellow="${ColorFontCode}226m"
-    _brown="${ColorFontCode}94m"
+    _yellow="${ColorFontCode}226${ColorEndCode}"
+    _brown="${ColorFontCode}94${ColorEndCode}"
   fi
-  export v_prompt_alexis_last_command_status="%{%(?.${_yellow}✨.${_brown}💩)%} %{%f%} "
+  sparkles='\u2728'
+  poo='💩'
+  export v_prompt_alexis_last_command_status="%{%(?.${_yellow}${sparkles}.${_brown}${poo})%G%} %{%f%} "
 }
 

@@ -17,9 +17,9 @@ f_prompt_alexis_pwd() {
 f_prompt_alexis_last_command_status() {
   l_prompt_alexis_yellow=""
   l_prompt_alexis_brown=""
-  if [ -n "${ColorFontCode:-}" ]; then
-    l_prompt_alexis_yellow="${ColorFontCode}226m"
-    l_prompt_alexis_brown="${ColorFontCode}94m"
+  if [ -n "${ColorFontCode:-}" ] && [ -n "${ColorEndCode:-}" ]; then
+    l_prompt_alexis_yellow="${ColorFontCode}226${ColorEndCode}"
+    l_prompt_alexis_brown="${ColorFontCode}94${ColorEndCode}"
   fi
   if [ "${v_prompt_alexis_last_command_status:-1}" -eq 0 ]; then
     v_prompt_alexis_last_command_status="${l_prompt_alexis_yellow}✨"
@@ -36,7 +36,7 @@ f_prompt_alexis_git_line() {
     gbg_git_info
     v_prompt_alexis_git_line="$(f_prompt_alexis_build_git_line)"
     if [ -n "${v_prompt_alexis_git_line}" ]
-    then 
+    then
       v_prompt_alexis_git_line="${v_prompt_alexis_git_line}\n"
     fi
   fi
@@ -166,7 +166,7 @@ f_prompt_alexis_build_git_line() {
 
       l_prompt_alexis_git_line="${l_prompt_alexis_git_line} (${gbg_head_branch} $(\
         lf_prompt_alexis_get_symbol_for "${gbg_upstream_merge_type:-merge}_tracking"\
-        ) $(echo ${gbg_upstream_name:-""} | sed "s#$gbg_head_branch#...#")) "
+        ) $(echo "${gbg_upstream_name:-""}" | sed "s#$gbg_head_branch#...#")) "
     fi
 
     l_prompt_alexis_git_line="${l_prompt_alexis_git_line}$(\
