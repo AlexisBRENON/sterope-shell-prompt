@@ -54,10 +54,29 @@ f_prompt_alexis_posix_setup() {
     merge_tracking:37
     tag:41"
 
+  if [ -z "${v_prompt_alexis_py_symbols:-""}" ]; then
+    if [ -e "$HOME/.local/share/icons-in-terminal/icons_bash.sh" ]; then
+      DEBUG "Loading icons in terminal"
+      . "$HOME/.local/share/icons-in-terminal/icons_bash.sh"
+      v_tmp=" ${dev_python:-"python"}  " # is a virtualenv
+      v_tmp="$v_tmp:${powerline_left_hard_divider:-"left divider"} " # separator
+      v_prompt_alexis_py_symbols="${v_tmp}"
+      unset v_tmp
+    else
+      echo "prompt_alexis: Virtualenv status line rely on icons-in-terminal project for nice icons." >&2
+      echo "Please see https://github.com/sebastiencs/icons-in-terminal/." >&2
+      v_prompt_alexis_py_symbols=""
+    fi
+  fi
+  DEBUG "py_symbols:  '${v_prompt_alexis_py_symbols}'"
+  v_prompt_alexis_py_symbols_map="
+    is_a_virtualenv:1
+    separator:2"
 
   v_prompt_alexis_help_string="alexis prompt is a multiline prompt which display:
   * an empty line to separate one command from another;
   * a git line if you are in a git repository (see below);
+  * a virtualenv python line (see below);
   * the host and working directory line (as classical prompts);
   * an indicator of the exit status of the last command.
 
@@ -66,7 +85,7 @@ The git line is based on the god-bless-git plugin (github.com/AlexisBRENON/god-b
 List of the prompt options:
   -s <symbols>
     A colon separated string representing symbols to use in the git line.
-    Default: 
+    Default:
       \"${v_prompt_alexis_git_symbols}\"
     Symbols meanings are:
       1: Current directory is a git repository
@@ -88,13 +107,24 @@ List of the prompt options:
       33: Your local branch is ahead of the upstream
       36: Pull will rebase
       37: Pull will merge
-      41: HEAD is tagged"
+      41: HEAD is tagged
+
+  -p <symbols>
+    A colon separated string representing symbols to use in the Python line.
+    Default:
+      \"${v_prompt_alexis_py_symbols}\"
+    Symbols meanings are:
+      1: Virtualenv is activated
+      2: In-line separator"
 
   l_prompt_alexis_old_optind=${OPTIND}
-  while getopts s: OPTION; do
+  while getopts s:p: OPTION; do
     case ${OPTION} in
       s)
         v_prompt_alexis_git_symbols="${OPTARG}"
+        ;;
+      p)
+        v_prompt_alexis_py_symbols="${OPTARG}"
         ;;
     esac
   done
@@ -103,6 +133,8 @@ List of the prompt options:
 
   export v_prompt_alexis_git_symbols
   export v_prompt_alexis_git_symbols_map
+  export v_prompt_alexis_py_symbols
+  export v_prompt_alexis_py_symbols_map
   export v_prompt_alexis_help_string
   export v_prompt_alexis_log_file="/tmp/prompt_alexis_${USER}_log"
 }
@@ -117,6 +149,7 @@ f_prompt_alexis_posix_preview() {
     (
       echo 'alexis theme, not in a git repo, after a successful command:'
       v_prompt_alexis_git_line=""
+      v_prompt_alexis_py_line=""
       f_prompt_alexis_separating_line
       f_prompt_alexis_host_info
       f_prompt_alexis_pwd
@@ -150,7 +183,7 @@ f_prompt_alexis_posix_preview() {
     export gbg_head_tag="tagname"
     v_prompt_alexis_git_line="$(f_prompt_alexis_build_git_line)"
     if [ -n "${v_prompt_alexis_git_line}" ]
-    then 
+    then
       v_prompt_alexis_git_line="${v_prompt_alexis_git_line}\n"
     fi
     f_prompt_alexis_separating_line

@@ -30,6 +30,34 @@ f_prompt_alexis_last_command_status() {
   export v_prompt_alexis_last_command_status
 }
 
+lf_prompt_alexis_get_py_symbol_for() {
+  symbol_id=${1:-}
+  symbol_idx=$(echo "${v_prompt_alexis_py_symbols_map:-}" | grep "${symbol_id}:" | head -1 | cut -d':' -f2)
+  echo "${v_prompt_alexis_py_symbols:-}" | cut -d":" -f "${symbol_idx}"
+}
+# shellcheck disable=SC2016
+f_prompt_alexis_py_line() {
+  v_prompt_alexis_py_line=""
+  if [ -n "${VIRTUAL_ENV:-}" ]; then
+    l_virtual_env_prompt="$(\
+      grep -A1 -F '_OLD_VIRTUAL_PS1="$PS1"' "${VIRTUAL_ENV}/bin/activate" | tail -n1 | \
+      sed -E 's/^ *if \[ "x([^"]*)" !=.*$/\1/')"
+    l_virtual_env_py_version="$(python --version 2>&1 | cut -d' ' -f2)"
+    v_prompt_alexis_py_line="${v_prompt_alexis_py_line}${ColorReset:-}${Black:-}${On_Green:-}"
+    v_prompt_alexis_py_line="${v_prompt_alexis_py_line}${l_virtual_env_prompt}"
+    v_prompt_alexis_py_line="${v_prompt_alexis_py_line}$(\
+      lf_prompt_alexis_get_py_symbol_for is_a_virtualenv
+    )"
+    v_prompt_alexis_py_line="${v_prompt_alexis_py_line} ${l_virtual_env_py_version} "
+    v_prompt_alexis_py_line="${v_prompt_alexis_py_line} ${ColorReset}${Green:-}"
+    v_prompt_alexis_py_line="${v_prompt_alexis_py_line}$(\
+      lf_prompt_alexis_get_py_symbol_for separator
+    )"
+    v_prompt_alexis_py_line="${v_prompt_alexis_py_line}${ColorReset}\n"
+  fi
+  export v_prompt_alexis_py_line
+}
+
 f_prompt_alexis_git_line() {
   v_prompt_alexis_git_line=""
   if [ "$(set | grep -c "gbg_git_info")" -ge 1 ]; then
@@ -175,9 +203,9 @@ f_prompt_alexis_build_git_line() {
         "$(lf_prompt_alexis_get_symbol_for tag) ${gbg_head_tag:-}"\
       )"
 
-    l_prompt_alexis_git_line="${l_prompt_alexis_git_line} ${Red}${On_Default:-}$(\
+    l_prompt_alexis_git_line="${l_prompt_alexis_git_line} ${ColorReset:-}${Red}$(\
       lf_prompt_alexis_get_symbol_for separator\
-    )${ColorReset:-}"
+    )${ColorReset}"
 
     echo "${l_prompt_alexis_git_line}"
     unset l_prompt_alexis_git_line
@@ -190,6 +218,9 @@ f_prompt_alexis_build_git_line() {
 f_prompt_alexis_build_prompt() {
   # Format the git line
   f_prompt_alexis_git_line
+
+  # Format the Python line
+  f_prompt_alexis_py_line
 
   # Format separating line
   f_prompt_alexis_separating_line
@@ -207,6 +238,7 @@ f_prompt_alexis_build_prompt() {
 f_prompt_alexis_print_prompt() {
   printf "%b" "${v_prompt_alexis_separating_line}" 2>"${v_prompt_alexis_log_file:-/dev/null}"
   printf "%b" "${v_prompt_alexis_git_line}" 2>"${v_prompt_alexis_log_file}"
+  printf "%b" "${v_prompt_alexis_py_line}" 2>"${v_prompt_alexis_log_file}"
   printf "%b" "${v_prompt_alexis_host_info}" 2>"${v_prompt_alexis_log_file}"
   printf "%b" "${v_prompt_alexis_pwd}" 2>"${v_prompt_alexis_log_file}"
   printf "%b" "${v_prompt_alexis_last_command_status}" 2>"${v_prompt_alexis_log_file}"
