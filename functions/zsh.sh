@@ -14,19 +14,22 @@ if [ "${v_prompt_alexis_no_async:-false}" = "false" ]; then
   unset f_prompt_alexis_git_line
   f_prompt_alexis_git_line() {
     # Kill the old git_info process if it is still running.
+    v_prompt_alexis_async_git_pid="$(cat "${XDG_CACHE_DIR:-${HOME}/.cache}/prompt_alexis/git_pid")" 2> /dev/null
     if [ "${v_prompt_alexis_async_git_pid:-0}" -gt 0 ]; then
       kill -SIGKILL "${v_prompt_alexis_async_git_pid}" > /dev/null 2>&1
     fi
 
     trap f_prompt_alexis_zsh_async_build_git_line USR1 # Call the formatter function when info will be retrieved
     f_prompt_alexis_zsh_async_git_line &! # Retrieve info asynchronously
-    v_prompt_alexis_async_git_pid=$! # Keep track of the asynchronous process
+    # Keep track of the asynchronous process
+    echo "$!" > "${XDG_CACHE_DIR:-${HOME}/.cache}/prompt_alexis/git_pid"
+    f_prompt_alexis_async_timeout &!
   }
 
   f_prompt_alexis_zsh_async_git_line() {
     # Get Git repository information.
-    if [ "$(set | grep -c "gbg_git_info")" -eq 1 ]; then
-      gbg_git_info
+    if [ "$(set | grep -c "god_bless_git")" -eq 1 ]; then
+      god_bless_git
       export -p | grep -Ee "gbg_" | rev | cut -d' ' -f1 | rev >! "${v_prompt_alexis_async_git_data}"
     fi
 
@@ -34,13 +37,24 @@ if [ "${v_prompt_alexis_no_async:-false}" = "false" ]; then
     kill -SIGUSR1 $$
   }
 
+  f_prompt_alexis_async_timeout () {
+    sleep 5
+    l_prompt_alexis_async_git_pid="$(cat "${XDG_CACHE_DIR:-${HOME}/.cache}/prompt_alexis/git_pid")" 2> /dev/null
+    if [ "${l_prompt_alexis_async_git_pid}" -gt 0 ]; then
+      kill -SIGKILL "${l_prompt_alexis_async_git_pid}" > /dev/null 2>&1
+      echo "0" > "${XDG_CACHE_DIR:-${HOME}/.cache}/prompt_alexis/git_pid"
+    fi
+  }
+
+
   f_prompt_alexis_zsh_async_build_git_line() {
-    if [ "${v_prompt_alexis_async_git_pid}" -gt 0 ] && \
+    v_prompt_alexis_async_git_pid="$(cat "${XDG_CACHE_DIR:-${HOME}/.cache}/prompt_alexis/git_pid")" 2> /dev/null
+    if [ "${v_prompt_alexis_async_git_pid:-0}" -gt 0 ] && \
       [ -e "${v_prompt_alexis_async_git_data}" ]; then
       . "${v_prompt_alexis_async_git_data}" # Load gbg variables
       l_prompt_alexis_new_git_line="$(f_prompt_alexis_build_git_line)" # Generate the pretty line
       if [ -n "${l_prompt_alexis_new_git_line}" ]
-      then 
+      then
         l_prompt_alexis_new_git_line="${l_prompt_alexis_new_git_line}\n"
       fi
       # If line has changed
@@ -51,7 +65,7 @@ if [ "${v_prompt_alexis_no_async:-false}" = "false" ]; then
       unset l_prompt_alexis_new_git_line
 
       # Reset async states.
-      v_prompt_alexis_async_git_pid=0
+      echo "0" > "${XDG_CACHE_DIR:-${HOME}/.cache}/prompt_alexis/git_pid"
       rm -f "${v_prompt_alexis_async_git_data}"
     fi
   }

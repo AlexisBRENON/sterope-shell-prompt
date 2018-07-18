@@ -1,6 +1,9 @@
 #! /bin/sh
 
 f_prompt_alexis_posix_setup() {
+  mkdir -p "${XDG_CACHE_DIR:-${HOME}/.cache}"
+  mkdir -p "${XDG_CACHE_DIR:-${HOME}/.cache}/prompt_alexis"
+
   # Load utilities functions
   . "${PROMPT_ALEXIS_PATH}/functions/posix.sh"
   if [ -z "${v_prompt_alexis_git_symbols:-""}" ]; then
@@ -28,7 +31,7 @@ f_prompt_alexis_posix_setup() {
       v_prompt_alexis_git_symbols=""
     fi
   fi
-  DEBUG "git_symbols: ${v_prompt_alexis_git_symbols}"
+  DEBUG "git_symbols: '${v_prompt_alexis_git_symbols}'"
   v_prompt_alexis_git_symbols_map="
     is_a_git_repo:1
     separator:2
