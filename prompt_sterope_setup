@@ -6,49 +6,107 @@
 #   Alexis BRENON
 #
 
+_shell_state="$(set +o | grep -v -e '+o')"
+set -eu
+
+DEBUG() {
+    echo "$@" >&2
+}
+
 get_absolute_dirname() {
-  SOURCE="$1"
-  while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-    DIR="$( cd -P "$( dirname -- "$SOURCE" )" && pwd )"
-    SOURCE="$(readlink "$SOURCE")"
-    [ "$SOURCE" != "/*" ] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-  done
-  ( cd -P "$( dirname -- "$SOURCE" )" && pwd )
-  unset DIR
-  unset SOURCE
+    SOURCE="$1"
+    while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+        DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+        SOURCE="$(readlink "$SOURCE")"
+        [ "$SOURCE" != "/*" ] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+    done
+    ( cd -P "$( dirname "$SOURCE" )" && pwd )
+    unset DIR
+    unset SOURCE
 }
 
 get_current_shell() {
-  # We cannot rely on the SHELL value which is not updated when launching a different shell
-  if [ -n "${BASH}" ]; then basename "${BASH}"
-  elif [ -n "${ZSH_NAME}" ]; then echo "${ZSH_NAME}"
-  fi
-}
-
-PROMPT_ALEXIS_PATH=${PROMPT_ALEXIS_PATH:-}
-for ARG in "${PROMPT_ALEXIS_PATH}" "$0" "$1" "$_" "$(command -V "$0" 2>/dev/null | sed 's#.*from /#/#')"; do
-  TEST_PATH="$(get_absolute_dirname "$ARG")"
-  if [ -e "${TEST_PATH}/prompt_alexis_setup" ]; then
-    PROMPT_ALEXIS_PATH="${TEST_PATH}"
-    break;
-  fi
-done
-unset TEST_PATH
-
-prompt_alexis_setup() {
-  if [ -e "${PROMPT_ALEXIS_PATH}/prompt_alexis_setup" ]; then
-    . "${PROMPT_ALEXIS_PATH}/setup/posix.sh"
-    f_prompt_alexis_posix_setup "$@"
-
-    l_prompt_alexis_current_shell="$(get_current_shell)"
-    if [ -e "${PROMPT_ALEXIS_PATH}/setup/${l_prompt_alexis_current_shell}.sh" ]; then
-      . "${PROMPT_ALEXIS_PATH}/setup/${l_prompt_alexis_current_shell}.sh"
-      "f_prompt_alexis_${l_prompt_alexis_current_shell}_setup"
+    # We cannot rely on the SHELL value which is not updated when launching a different shell
+    if [ -n "${BASH_VERSION}" ]; then
+        echo 'bash'
+    elif [ -n "${ZSH_VERSION}" ]; then
+        echo 'zsh'
     fi
-    unset l_prompt_alexis_current_shell
-  fi
 }
-prompt_alexis_setup "$@"
 
-unset get_current_shell
+f_sterope_setup() {
+    # shellcheck source=./setup/posix.sh
+    . "${sterope_dir}/setup/posix.sh"
+    f_sterope_posix_setup
+
+    current_shell="$(get_current_shell)"
+    if [ -e "${sterope_dir}/setup/${current_shell}.sh" ]; then
+        # shellcheck source=./setup/bash.sh
+        # shellcheck source=./setup/zsh.sh
+        . "${sterope_dir}/setup/${current_shell}.sh"
+        eval "f_sterope_${current_shell}_setup"
+    fi
+    unset current_shell
+}
+
+sterope_call=""
+sterope_main="prompt_sterope_setup"
+if [ -z "${sterope_call}" ]; then # Try to guess call type (invokation vs. sourcing)
+    if [ -n "${ZSH_VERSION:-}" ]; then # Z Shell
+        eval_context="${ZSH_EVAL_CONTEXT:-}"
+        if [ \
+            "$(echo "${eval_context}" | rev | cut -d: -f1 | rev)" = \
+            "file" ]; then
+            sterope_call="source"
+        else
+            sterope_call="invoke"
+        fi
+        sterope_main="$0"
+        unset eval_context
+    elif [ -n "${BASH_VERSION:-}" ]; then # Bash
+        if [ "$(basename "${0:-}")" = "${sterope_main}" ]; then
+            sterope_call="invoke"
+            sterope_main="$0"
+        else
+            sterope_call="source"
+            # shellcheck disable=SC2039
+            sterope_main="${BASH_SOURCE[0]}"
+        fi
+    else # Other shells
+        if [ "$(basename "${0:-}")" = "${sterope_main}" ]; then
+            sterope_call="invoke"
+            sterope_main="$0"
+        else
+            sterope_call="source"
+        fi
+    fi
+fi
+
+sterope_dir="${sterope_dir:-$(get_absolute_dirname "${sterope_main}")}"
+sterope_main="${sterope_dir}/$(basename "${sterope_main}")"
+if [ ! -r "${sterope_main}" ]; then
+    echo "Unable to get Sterope base directory." >&2
+    echo "Please define the sterope_dir environment variable" \
+        "to the base directory, before invoking script." >&2
+else
+    if [ "${sterope_call}" = "invoke" ]; then
+        # Script invoked as command
+        f_sterope_setup
+    elif [ "${sterope_call}" = "source" ]; then
+        export sterope_dir
+        export sterope_version="0.0.10"
+    else
+        echo "Unable to determine invokation type." >&2
+    fi
+fi
+
 unset get_absolute_dirname
+unset get_current_shell
+unset sterope_main
+unset sterope_call
+
+set +eu
+eval "${_shell_state}"
+unset shell_state
+
+
