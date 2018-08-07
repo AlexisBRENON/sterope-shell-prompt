@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/zsh
 #
 # TODO
 #
@@ -7,11 +7,24 @@
 #
 
 _shell_state="$(set +o | grep -v -e '+o')"
-set -eu
 
-DEBUG() {
-    echo "$@" >&2
-}
+set -x
+set -euo pipefail
+IFS='\\n\\t'
+
+#/ Usage: . ./sterope_prompt
+#/ Description: A multiline shining shell prompt
+#/ Options:
+#/   --help: Display this help message
+usage() { grep '^#/' "$1" | cut -c4- ; exit 0 ; }
+expr "$*" : ".*--help" > /dev/null && usage "$0"
+
+readonly LOG_FILE="/tmp/$(basename "$0").log"
+debug()   { printf "[DEBUG]   %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; }
+info()    { printf "[INFO]    %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; }
+warning() { printf "[WARNING] %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; }
+error()   { printf "[ERROR]   %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; }
+fatal()   { printf "[FATAL]   %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
 
 get_absolute_dirname() {
     SOURCE="$1"
@@ -27,9 +40,9 @@ get_absolute_dirname() {
 
 get_current_shell() {
     # We cannot rely on the SHELL value which is not updated when launching a different shell
-    if [ -n "${BASH_VERSION}" ]; then
+    if [ -n "${BASH_VERSION:-}" ]; then
         echo 'bash'
-    elif [ -n "${ZSH_VERSION}" ]; then
+    elif [ -n "${ZSH_VERSION:-}" ]; then
         echo 'zsh'
     fi
 }
@@ -85,8 +98,8 @@ fi
 sterope_dir="${sterope_dir:-$(get_absolute_dirname "${sterope_main}")}"
 sterope_main="${sterope_dir}/$(basename "${sterope_main}")"
 if [ ! -r "${sterope_main}" ]; then
-    echo "Unable to get Sterope base directory." >&2
-    echo "Please define the sterope_dir environment variable" \
+    error "Unable to get Sterope base directory." >&2
+    error "Please define the sterope_dir environment variable" \
         "to the base directory, before invoking script." >&2
 else
     if [ "${sterope_call}" = "invoke" ]; then
@@ -94,9 +107,9 @@ else
         f_sterope_setup
     elif [ "${sterope_call}" = "source" ]; then
         export sterope_dir
-        export sterope_version="0.0.10"
+        export sterope_version="0.0.1"
     else
-        echo "Unable to determine invokation type." >&2
+        error "Unable to determine invokation type." >&2
     fi
 fi
 
@@ -105,8 +118,7 @@ unset get_current_shell
 unset sterope_main
 unset sterope_call
 
-set +eu
+set +euo pipefail
 eval "${_shell_state}"
 unset shell_state
-
 
