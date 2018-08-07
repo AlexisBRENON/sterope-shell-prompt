@@ -8,7 +8,6 @@
 
 _shell_state="$(set +o | grep -v -e '+o')"
 
-set -x
 set -euo pipefail
 IFS='\\n\\t'
 
