@@ -7,23 +7,13 @@
 #
 
 _shell_state="$(set +o | grep -v -e '+o')"
-
 set -euo pipefail
-IFS='\\n\\t'
 
-#/ Usage: . ./sterope_prompt
-#/ Description: A multiline shining shell prompt
-#/ Options:
-#/   --help: Display this help message
-usage() { grep '^#/' "$1" | cut -c4- ; exit 0 ; }
-expr "$*" : ".*--help" > /dev/null && usage "$0"
-
-readonly LOG_FILE="/tmp/$(basename "$0").log"
-debug()   { printf "[DEBUG]   %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; }
-info()    { printf "[INFO]    %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; }
-warning() { printf "[WARNING] %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; }
-error()   { printf "[ERROR]   %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; }
-fatal()   { printf "[FATAL]   %s\\n" "$*" | tee -a "$LOG_FILE" >&2 ; exit 1 ; }
+# #########################################################
+#
+# Utilities
+#
+# #########################################################
 
 get_absolute_dirname() {
     SOURCE="$1"
@@ -37,32 +27,15 @@ get_absolute_dirname() {
     unset SOURCE
 }
 
-get_current_shell() {
-    # We cannot rely on the SHELL value which is not updated when launching a different shell
-    if [ -n "${BASH_VERSION:-}" ]; then
-        echo 'bash'
-    elif [ -n "${ZSH_VERSION:-}" ]; then
-        echo 'zsh'
-    fi
-}
 
-f_sterope_setup() {
-    # shellcheck source=./setup/posix.sh
-    . "${sterope_dir}/setup/posix.sh"
-    f_sterope_posix_setup
-
-    current_shell="$(get_current_shell)"
-    if [ -e "${sterope_dir}/setup/${current_shell}.sh" ]; then
-        # shellcheck source=./setup/bash.sh
-        # shellcheck source=./setup/zsh.sh
-        . "${sterope_dir}/setup/${current_shell}.sh"
-        eval "f_sterope_${current_shell}_setup"
-    fi
-    unset current_shell
-}
+# #########################################################
+#
+# Call detector
+#
+# #########################################################
 
 sterope_call=""
-sterope_main="prompt_sterope_setup"
+sterope_main="sterope_prompt"
 if [ -z "${sterope_call}" ]; then # Try to guess call type (invokation vs. sourcing)
     if [ -n "${ZSH_VERSION:-}" ]; then # Z Shell
         eval_context="${ZSH_EVAL_CONTEXT:-}"
@@ -94,30 +67,36 @@ if [ -z "${sterope_call}" ]; then # Try to guess call type (invokation vs. sourc
     fi
 fi
 
-sterope_dir="${sterope_dir:-$(get_absolute_dirname "${sterope_main}")}"
-sterope_main="${sterope_dir}/$(basename "${sterope_main}")"
+STEROPE_ROOT="${STEROPE_ROOT:-$(get_absolute_dirname "${sterope_main}")}"
+sterope_main="${STEROPE_ROOT}/$(basename "${sterope_main}")"
+
+# #########################################################
+#
+# Call entry points
+#
+# #########################################################
+
 if [ ! -r "${sterope_main}" ]; then
     error "Unable to get Sterope base directory." >&2
-    error "Please define the sterope_dir environment variable" \
+    error "Please define the STEROPE_ROOT environment variable" \
         "to the base directory, before invoking script." >&2
 else
+    export STEROPE_ROOT
+    export STEROPE_VERSION="0.0.1"
     if [ "${sterope_call}" = "invoke" ]; then
         # Script invoked as command
-        f_sterope_setup
+        # shellcheck source=./main/invoke.sh
+        . "${STEROPE_ROOT}/main/invoke.sh"
     elif [ "${sterope_call}" = "source" ]; then
-        export sterope_dir
-        export sterope_version="0.0.1"
+        # Script sourced
+        # shellcheck source=./main/source.sh
+        . "${STEROPE_ROOT}/main/source.sh"
     else
-        error "Unable to determine invokation type." >&2
+        echo "Unable to determine invokation type." >&2
     fi
 fi
 
-unset get_absolute_dirname
-unset get_current_shell
-unset sterope_main
-unset sterope_call
-
 set +euo pipefail
 eval "${_shell_state}"
-unset shell_state
+unset _shell_state
 
