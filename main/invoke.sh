@@ -7,6 +7,7 @@
 . "${STEROPE_ROOT}/setup/init.sh"
 f_sterope_setup
 
-printf '%s' "${v_sterope_help_message}"
+printf 'Sterope prompt version %s\n' "${STEROPE_VERSION}"
+printf '%s\n' "${v_sterope_help_message}"
 exit 0
 
