@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
-f_prompt_alexis_bash_setup() {
-  . "${PROMPT_ALEXIS_PATH}/functions/bash.sh"
-  PROMPT_COMMAND="f_prompt_alexis_bash_build_prompt"
+f_sterope_bash_setup() {
+  # shellcheck source=./lib/bash/init.sh
+  . "${STEROPE_ROOT}/lib/bash/init.sh"
 }
 
