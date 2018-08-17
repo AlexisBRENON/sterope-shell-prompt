@@ -1,6 +1,8 @@
 #! /usr/bin/env sh
 
 oneTimeSetUp() {
+    # shellcheck disable=1090
+    . "${GBG_DIR}/god_bless_git.sh"
     . ./sterope_prompt
     SHUNIT_CMDOUTFILE="${STEROPE_ROOT:-.}/tests/out.txt"
     export SHUNIT_CMDOUTFILE
@@ -24,10 +26,10 @@ setUp() {
 
 tearDown() {
     if [ -n "${SHUNIT_TMPDIR}" ]; then
-      echo "Delete ${SHUNIT_TMPDIR}"
-      rm -fr "${SHUNIT_TMPDIR}"
-      echo "Mkdir ${SHUNIT_TMPDIR}"
-      mkdir "${SHUNIT_TMPDIR}"
+        cd / || exit 250
+        rm -fr "${SHUNIT_TMPDIR}"
+        mkdir "${SHUNIT_TMPDIR}"
+        cd "${SHUNIT_TMPDIR}" || exit 250
     fi
 }
 

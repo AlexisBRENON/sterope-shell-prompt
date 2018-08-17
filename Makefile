@@ -2,7 +2,9 @@
 
 TEST_SHELL := sh
 
-FUNCTIONAL_TESTS := tests/functional/invokation.sh
+FUNCTIONAL_TESTS := \
+	tests/functional/invokation.sh \
+	tests/functional/posix.sh
 PROFILE_TESTS :=
 
 tests: functional-tests profile

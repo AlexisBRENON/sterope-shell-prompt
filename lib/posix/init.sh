@@ -3,6 +3,8 @@
 posix_lib="${STEROPE_ROOT}/lib/posix/"
 
 # shellcheck source=./lib/posix/separating_line.sh
+. "${posix_lib}/utils.sh"
+# shellcheck source=./lib/posix/separating_line.sh
 . "${posix_lib}/separating_line.sh"
 # shellcheck source=./lib/posix/host_info.sh
 . "${posix_lib}/host_info.sh"
