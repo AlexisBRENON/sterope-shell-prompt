@@ -1,0 +1,26 @@
+language: generic
+
+before_install:
+   - curl -L https://sourceforge.net/projects/zsh/files/latest/download > zsh.tar.gz
+   - tar -xvzf zsh.tar.gz
+   - cd zsh*/
+   - ./configure --prefix="${HOME}/.local"
+   - make
+   - make install
+   - cd -
+   - rm -fr zsh*
+
+env:
+  - SHELL=sh
+  - SHELL=bash
+  - SHELL="zsh -y"
+
+install:
+  - PATH="$HOME/.local/bin:$PATH"
+
+script:
+  - make "TEST_SHELL=${SHELL}" tests
+
+after_failure:
+  - make "TEST_SHELL=${SHELL} -x" tests
+
