@@ -3,8 +3,10 @@
 TEST_SHELL := sh
 
 FUNCTIONAL_TESTS := \
-	tests/functional/invokation.sh \
-	tests/functional/posix.sh
+	tests/functional/posix/working_directory.sh \
+	tests/functional/posix/virtualenv.sh \
+	tests/functional/posix/git.sh \
+	tests/functional/invokation.sh
 PROFILE_TESTS :=
 
 tests: functional-tests profile

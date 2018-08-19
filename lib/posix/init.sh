@@ -17,20 +17,7 @@ posix_lib="${STEROPE_ROOT}/lib/posix/"
 # shellcheck source=./lib/posix/git.sh
 . "${posix_lib}/git.sh"
 
-lf_prompt_alexis_get_py_symbol_for() {
-    symbol_id=${1:-}
-    symbol_idx=$(echo "${v_prompt_alexis_py_symbols_map:-}" | grep "${symbol_id}:" | head -1 | cut -d':' -f2)
-    echo "${v_prompt_alexis_py_symbols:-}" | cut -d":" -f "${symbol_idx}"
-}
-
-
-lf_prompt_alexis_get_symbol_for() {
-    symbol_id=${1:-}
-    symbol_idx=$(echo "${v_prompt_alexis_git_symbols_map:-}" | grep "${symbol_id}:" | head -1 | cut -d':' -f2)
-    echo "${v_prompt_alexis_git_symbols:-}" | cut -d":" -f "${symbol_idx}"
-}
-
-f_posix_build_prompt() {
+f_sterope_posix_build_prompt() {
     # Format the git line
     f_sterope_posix_git
 
@@ -50,14 +37,23 @@ f_posix_build_prompt() {
     f_sterope_posix_exit_status
 }
 
-f_prompt_alexis_print_prompt() {
-    printf \
-        "%b" \
+f_sterope_print_prompt() {
+    printf "%b" \
         "${v_sterope_separating_line:-}" \
-        2>"${v_sterope_log_file:-/dev/null}"
-    printf "%b" "${v_sterope_git:-}" 2>"${v_sterope_log_file}"
-    printf "%b" "${v_sterope_virtualenv:-}" 2>"${v_sterope_log_file}"
-    printf "%b" "${v_sterope_host_info:-}" 2>"${v_sterope_log_file}"
-    printf "%b" "${v_sterope_working_directory:-}" 2>"${v_sterope_log_file}"
-    printf "%b" "${v_sterope_exit_status:-}" 2>"${v_sterope_log_file}"
+        2>"${STEROPE_ERR_FILE:-/dev/null}"
+    printf "%b" \
+        "${v_sterope_git:-}" \
+        2>"${STEROPE_ERR_FILE}"
+    printf "%b" \
+        "${v_sterope_virtualenv:-}" \
+        2>"${STEROPE_ERR_FILE}"
+    printf "%b" \
+        "${v_sterope_host_info:-}" \
+        2>"${STEROPE_ERR_FILE}"
+    printf "%b" \
+        "${v_sterope_working_directory:-}" \
+        2>"${STEROPE_ERR_FILE}"
+    printf "%b" \
+        "${v_sterope_exit_status:-}" \
+        2>"${STEROPE_ERR_FILE}"
 }
