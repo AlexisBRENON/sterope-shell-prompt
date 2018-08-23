@@ -7,6 +7,11 @@ f_sterope_posix_setup() {
     mkdir -p "${v_sterope_cache_dir}"
     mkdir -p "${v_sterope_config_dir}"
 
+    STEROPE_CACHE="${v_sterope_cache_dir}"
+    STEROPE_ERR_FILE="${STEROPE_CACHE}/error.log"
+    STEROPE_LOG_FILE="${STEROPE_CACHE}/output.log"
+    echo "" > "${STEROPE_LOG_FILE}" 2> "${STEROPE_ERR_FILE}"
+
     v_sterope_git_symbols="$(lf_sterope_get_git_symbols)\\n"
     v_sterope_py_symbols="$(lf_sterope_get_py_symbols)\\n"
     v_sterope_help_message="$(lf_sterope_get_help_message)\\n"
