@@ -1,4 +1,4 @@
-#! /bin/zsh
+#! /bin/sh
 #
 # TODO
 #
@@ -7,7 +7,7 @@
 #
 
 _shell_state="$(set +o | grep -v -e '+o')"
-set -euo pipefail
+set -eu
 
 # #########################################################
 #
@@ -96,7 +96,7 @@ else
     fi
 fi
 
-set +euo pipefail
+set +eu
 eval "${_shell_state}"
 unset _shell_state
 
