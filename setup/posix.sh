@@ -27,8 +27,8 @@ lf_sterope_get_git_symbols() {
         #shellcheck disable=1090
         . "$HOME/.local/share/icons-in-terminal/icons_bash.sh"
     else
-        warn "Sterope prompt heavily relies on icons-in-terminal"
-        warn "Please see https://github.com/sebastiencs/icons-in-terminal/"
+        warning "Sterope prompt heavily relies on icons-in-terminal"
+        warning "Please see https://github.com/sebastiencs/icons-in-terminal/"
     fi
     l_sterope_tmp=""
     for l_sterope_symbol in \
@@ -66,8 +66,8 @@ lf_sterope_get_py_symbols() {
         #shellcheck disable=1090
         . "$HOME/.local/share/icons-in-terminal/icons_bash.sh"
     else
-        warn "Sterope prompt heavily relies on icons-in-terminal"
-        warn "Please see https://github.com/sebastiencs/icons-in-terminal/"
+        warning "Sterope prompt heavily relies on icons-in-terminal"
+        warning "Please see https://github.com/sebastiencs/icons-in-terminal/"
     fi
 
     l_sterope_tmp=""
