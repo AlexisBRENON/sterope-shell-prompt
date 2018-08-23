@@ -16,6 +16,11 @@ env:
   - SHELL="zsh -y"
 
 install:
+  - curl -L https://github.com/AlexisBRENON/god-bless-git/archive/master.tar.gz > gbg.tar.gz
+  - tar -xvzf gbg.tar.gz
+  - . ./god-bless-git-master/god_bless_git.sh
+
+before_script:
   - PATH="$HOME/.local/bin:$PATH"
 
 script:
