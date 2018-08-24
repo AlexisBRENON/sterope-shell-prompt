@@ -2,7 +2,7 @@
 
 f_sterope_posix_git() {
     v_sterope_git=""
-    if [ "$(set | grep -c "god_bless_git")" -ge 1 ]; then
+    if [ -n "${GBG_VERSION:-}" ]; then
         god_bless_git
         v_sterope_git="$(lf_sterope_build_git)"
     fi
