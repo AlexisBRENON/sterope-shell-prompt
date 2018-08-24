@@ -1,5 +1,11 @@
 #! /bin/sh
 
+lf_sterope_get_virtualenv_symbol() {
+    lf_sterope_posix_get_symbol \
+        "${v_sterope_virtualenv_symbols:-}" \
+        "$1"
+}
+
 f_sterope_posix_virtualenv() {
     v_sterope_virtualenv=""
     if [ -n "${VIRTUAL_ENV:-}" ]; then
@@ -35,8 +41,7 @@ f_sterope_posix_virtualenv() {
             printf '%s %s' \
             "${v_sterope_virtualenv}" \
             "$(\
-                lf_sterope_get_symbol \
-                    "${v_sterope_virtualenv_map:-}" \
+                lf_sterope_get_virtualenv_symbol \
                     "is_a_virtualenv" \
                 )" \
             )"
@@ -54,8 +59,7 @@ f_sterope_posix_virtualenv() {
             printf '%s%s' \
             "${v_sterope_virtualenv}" \
             "$(\
-                lf_sterope_get_symbol \
-                    "${v_sterope_virtualenv_map:-}" \
+                lf_sterope_get_virtualenv_symbol \
                     "separator" \
                 )" \
             )"
