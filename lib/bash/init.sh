@@ -1,18 +1,15 @@
 #! /usr/bin/env bash
 
-f_prompt_alexis_bash_build_prompt() {
-  export v_prompt_alexis_last_command_status="$?"
-  f_prompt_alexis_build_prompt
-  PS1="$(f_prompt_alexis_print_prompt)"
-}
+shell_lib="${STEROPE_ROOT}/lib/bash/"
 
-unset f_prompt_alexis_host_info
-f_prompt_alexis_host_info() {
-  export v_prompt_alexis_host_info="\u@\h "
-}
+# shellcheck source=./lib/bash/host_info.sh
+. "${shell_lib}/host_info.sh"
+# shellcheck source=./lib/bash/working_directory.sh
+. "${shell_lib}/working_directory.sh"
 
-unset f_prompt_alexis_pwd
-f_prompt_alexis_pwd() {
-  export v_prompt_alexis_pwd="${Green:-}\w${ColorReset:-}\n"
+f_sterope_bash_build_prompt() {
+  export v_sterope_last_command_status="$?"
+  f_sterope_build_prompt
+  PS1="$(f_sterope_print_prompt)"
 }
 
