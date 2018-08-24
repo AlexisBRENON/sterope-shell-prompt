@@ -2,7 +2,7 @@
 
 posix_lib="${STEROPE_ROOT}/lib/posix/"
 
-# shellcheck source=./lib/posix/separating_line.sh
+# shellcheck source=./lib/posix/utils.sh
 . "${posix_lib}/utils.sh"
 # shellcheck source=./lib/posix/separating_line.sh
 . "${posix_lib}/separating_line.sh"
@@ -37,7 +37,7 @@ f_sterope_posix_build_prompt() {
     f_sterope_posix_exit_status
 }
 
-f_sterope_print_prompt() {
+f_sterope_posix_print_prompt() {
     printf "%b" \
         "${v_sterope_separating_line:-}" \
         2>"${STEROPE_ERR_FILE:-/dev/null}"

@@ -1,7 +1,7 @@
 #! /bin/sh
 
-# shellcheck source=./utils/logging.sh
-. "${STEROPE_ROOT}/utils/logging.sh"
+# shellcheck source=./utils/inti.sh
+. "${STEROPE_ROOT}/utils/init.sh"
 
 # shellcheck source=./setup/init.sh
 . "${STEROPE_ROOT}/setup/init.sh"
