@@ -1,8 +1,8 @@
 language: generic
 
 before_install:
-   - curl -L https://sourceforge.net/projects/zsh/files/latest/download > zsh.tar.gz
-   - tar -xvzf zsh.tar.gz
+   - curl -L https://sourceforge.net/projects/zsh/files/latest/download > zsh.tar.xz
+   - tar -xvJf zsh.tar.xz
    - cd zsh*/
    - ./configure --prefix="${HOME}/.local"
    - make
