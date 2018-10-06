@@ -6,7 +6,7 @@ test_invokation() {
     invokation_output=$("${STEROPE_ROOT}/sterope_prompt")
     invokation_exit=$?
     assertEquals \
-        "Invokation exits with error" \
+        "Invokation exits with error." \
         0 ${invokation_exit}
 
     expected_version=${STEROPE_VERSION:-undefined}
