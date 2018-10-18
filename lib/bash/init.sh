@@ -9,7 +9,7 @@ shell_lib="${STEROPE_ROOT}/lib/bash/"
 
 f_sterope_bash_build_prompt() {
   export v_sterope_last_command_status="$?"
-  f_sterope_build_prompt
+  f_sterope_posix_build_prompt
   PS1="$(f_sterope_print_prompt)"
 }
 

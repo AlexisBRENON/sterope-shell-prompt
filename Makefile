@@ -6,6 +6,7 @@ FUNCTIONAL_TESTS := \
 	tests/functional/posix/working_directory.sh \
 	tests/functional/posix/virtualenv.sh \
 	tests/functional/posix/git.sh \
+	tests/functional/posix/exit_status.sh \
 	tests/functional/invokation.sh
 PROFILE_TESTS :=
 

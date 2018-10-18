@@ -1,6 +1,11 @@
 #! /bin/sh
 
 f_sterope_posix_exit_status() {
+    l_last_command_status="$?"
+    if [ -z "${v_sterope_last_command_status:-}" ]; then
+        export v_sterope_last_command_status="${l_last_command_status}"
+    fi
+    unset l_last_command_status
     l_sterope_color_yellow=""
     l_sterope_color_brown=""
     if [ -n "${ColorFontCode:-}" ] && [ -n "${ColorEndCode:-}" ]; then

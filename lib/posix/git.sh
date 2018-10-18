@@ -1,5 +1,6 @@
 #! /bin/sh
 
+# TODO: make GBG a plugin for git support
 f_sterope_posix_git() {
     v_sterope_git=""
     if [ -n "${GBG_VERSION:-}" ]; then
