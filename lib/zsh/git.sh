@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env zsh
 
 # ###################################################################
 # Use an async process to fetch git infos
@@ -17,7 +17,7 @@ if [ "${v_sterope_no_async:-false}" = "false" ]; then
         unset l_sterope_async_git_pid
     }
 
-    f_sterope_zsh_git_line() {
+    f_sterope_zsh_git() {
         # Kill the old git_info process if it is still running.
         f_sterope_zsh_kill_async_job
         # Call the formatter function when info will be retrieved
@@ -34,7 +34,7 @@ if [ "${v_sterope_no_async:-false}" = "false" ]; then
         # Get Git repository information.
         if [ -n "${GBG_VERSION}" ]; then
             # Save all GBG variables in a file to load them back in another job
-            ${GBG_ROOT}/god_bless_git.sh > "${v_sterope_async_git_data}"
+            ${GBG_DIR}/god_bless_git.sh > "${v_sterope_async_git_data}"
         fi
 
         # Signal completion to parent process.
@@ -44,7 +44,7 @@ if [ "${v_sterope_no_async:-false}" = "false" ]; then
     f_sterope_zsh_async_timeout () {
         # TODO: What happen if another jobs has been launched later?
         sleep 5
-        f_sterope_zsh_async_timeout
+        f_sterope_zsh_kill_async_job
     }
 
     f_sterope_zsh_async_format_git_line() {
@@ -57,7 +57,7 @@ if [ "${v_sterope_no_async:-false}" = "false" ]; then
             . "${v_sterope_async_git_data}"
             # Generate the pretty line
             v_sterope_git_line="$(\
-                f_sterope_build_git_line
+                lf_sterope_build_git
             )"
             # Refresh the prompt
             zle && zle reset-prompt && print ''

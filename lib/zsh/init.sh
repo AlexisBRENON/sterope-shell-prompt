@@ -12,7 +12,17 @@ shell_lib="${STEROPE_ROOT}/lib/zsh/"
 . "${shell_lib}/exit_status.sh"
 
 f_sterope_zsh_build_prompt() {
-  export v_sterope_last_exit_status="$?"
-  f_sterope_build_prompt
+  export v_sterope_last_command_status="$?"
+  # Format the git line
+  f_sterope_zsh_git
+
+  # Format user/host info
+  f_sterope_zsh_host_info
+
+  # Format PWD.
+  f_sterope_zsh_working_directory
+
+  # Format last command status
+  f_sterope_zsh_exit_status
 }
 
