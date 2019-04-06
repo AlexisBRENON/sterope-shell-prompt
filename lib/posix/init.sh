@@ -18,6 +18,8 @@ posix_lib="${STEROPE_ROOT}/lib/posix/"
 . "${posix_lib}/git.sh"
 
 f_sterope_posix_build_prompt() {
+    export v_sterope_last_command_status="$?"
+
     # Format the git line
     f_sterope_posix_git
 
